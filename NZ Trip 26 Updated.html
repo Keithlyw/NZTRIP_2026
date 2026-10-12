@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NZ Trip 2026</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: one calm column. Calendar strip on top picks the day, big tick-off timeline below, fixed 4-button bar at the bottom.
+   Palette: glacier lake teal, lupin violet, Fergburger coral, tussock gold (decoration only). */
+:root{
+  --bg:#EAF3F2; --surface:#FFFFFF; --surface2:#DCEBE9; --ink:#10302E; --muted:#4A6663; --line:#BFD5D2;
+  --lake:#0B7F82; --lake-ink:#FFFFFF; --lupin:#6B3FA8; --coral:#BF3A22; --slate:#34598A; --ochre:#8F5F00; --meet:#2B7449;
+  --gold:#F2B33D; --hero-a:#0B6D70; --hero-b:#0F4C5C; --hero-ink:#FFFFFF;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1B1E; --surface:#12282B; --surface2:#1A3639; --ink:#E6F3F1; --muted:#A5C1BD; --line:#2B4A4D;
+    --lake:#3CC3C4; --lake-ink:#062325; --lupin:#BEA4F2; --coral:#FF9078; --slate:#9DBDEB; --ochre:#F5C25A; --meet:#7FD6A3;
+    --gold:#F5C25A; --hero-a:#0F4A4D; --hero-b:#0A2F3A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1B1E; --surface:#12282B; --surface2:#1A3639; --ink:#E6F3F1; --muted:#A5C1BD; --line:#2B4A4D;
+  --lake:#3CC3C4; --lake-ink:#062325; --lupin:#BEA4F2; --coral:#FF9078; --slate:#9DBDEB; --ochre:#F5C25A; --meet:#7FD6A3;
+  --gold:#F5C25A; --hero-a:#0F4A4D; --hero-b:#0A2F3A; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 1.125rem/1.55 var(--body);padding-inline:16px;padding-block:12px 112px;-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin-inline:auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* hero */
+.hero{background:linear-gradient(160deg,var(--hero-a),var(--hero-b));color:var(--hero-ink);border-radius:20px;overflow:hidden;position:relative}
+.hero-in{padding:22px 20px 0;position:relative;z-index:1}
+.hero .eyebrow{font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.hero h1{font-size:clamp(2.1rem,9vw,3.4rem);font-weight:800;margin-top:4px}
+.hero .sub{margin-top:6px;opacity:.95}
+.pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.pill{background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.4);border-radius:999px;padding:8px 14px;font-weight:700;font-size:1rem}
+.pill b{font-family:var(--display);font-size:1.25rem;margin-right:4px}
+.clock{flex-basis:100%;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.4);border-radius:16px;padding:12px 12px 14px}
+.clk-label{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.clk-label i{width:10px;height:10px;border-radius:50%;background:var(--gold);flex:none;animation:beat 1s ease-in-out infinite}
+@keyframes beat{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+.clk-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.clk-row div{background:rgba(0,0,0,.22);border-radius:12px;padding:8px 2px 6px;text-align:center;min-width:0}
+.clk-row b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,8vw,2.4rem);line-height:1.1;font-variant-numeric:tabular-nums}
+.clk-row span{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;opacity:.9}
+.clk-done{font-family:var(--display);font-weight:800;font-size:1.3rem}
+@media (prefers-reduced-motion:reduce){.clk-label i{animation:none}}
+.fact{flex-basis:100%;display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.4);border-radius:16px;padding:12px 14px;margin-bottom:6px}
+.fact .fi{font-size:1.8rem;line-height:1;flex:none}
+.fact h2{font-size:.9rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;opacity:.92;margin-bottom:2px}
+.fact p{font-size:1.05rem;line-height:1.45}
+.todo{display:flex;flex-direction:column;gap:6px;padding:14px 0;border-top:1px solid var(--line)}
+.todo:first-child{border-top:0}
+.todo h4{font-size:1.15rem}
+.todo select{font:inherit;font-size:1.05rem;padding:10px 12px;border-radius:12px;border:2px solid var(--lake);background:var(--surface);color:var(--ink);width:100%;min-height:48px}
+.todo .saved{font-size:.9rem;color:var(--meet);font-weight:700;min-height:1.2em}
+.sky{display:block;width:100%;height:auto;margin-top:-6px}
+
+/* views */
+.view[hidden]{display:none}
+.panel{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:18px}
+.h-sec{font-size:1.5rem;font-weight:800}
+.lead{color:var(--muted)}
+
+/* calendar strip */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal button{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 0 6px;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;position:relative}
+.cal .dow{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.cal .num{font-family:var(--display);font-weight:800;font-size:1.35rem;line-height:1.1}
+.cal button[aria-pressed="true"]{background:var(--lake);color:var(--lake-ink);border-color:var(--lake)}
+.cal button[aria-pressed="true"] .dow{color:var(--lake-ink);opacity:.9}
+.cal .today{position:absolute;bottom:3px;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.legend{font-size:.9rem;color:var(--muted);margin-top:8px}
+
+/* day card */
+.day-head{display:flex;flex-direction:column;gap:6px}
+.day-head .eyebrow{font-size:.9rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.day-head h2{font-size:clamp(1.7rem,6.5vw,2.3rem);font-weight:800}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 11px;font-size:.88rem;font-weight:700;border:1.5px solid currentColor;background:color-mix(in srgb,currentColor 12%,var(--surface))}
+.c-visit{color:var(--lake)} .c-eat{color:var(--coral)} .c-stay{color:var(--lupin)} .c-drive{color:var(--slate)} .c-flight{color:var(--ochre)} .c-meet{color:var(--meet)}
+.chip.plain{color:var(--ink);border-color:var(--line);background:var(--surface2);font-weight:400}
+.banner{background:color-mix(in srgb,var(--gold) 22%,var(--surface));border:1.5px solid var(--gold);border-radius:14px;padding:12px 14px}
+.banner b{font-family:var(--display)}
+.two{display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:640px){.two{grid-template-columns:1fr 1fr}}
+.mini{display:flex;gap:12px;align-items:flex-start}
+.mini .big{font-size:2rem;line-height:1}
+.mini h3{font-size:1.1rem}
+.mini p{font-size:1rem;color:var(--muted)}
+
+/* timeline */
+.tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.item{display:grid;grid-template-columns:auto 1fr;gap:14px;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:14px;transition:opacity .2s}
+.item.done{opacity:.72}
+.item.done .title{text-decoration:line-through;text-decoration-thickness:2px}
+.tick{display:flex;align-items:flex-start;padding-top:2px}
+.tick input{appearance:none;-webkit-appearance:none;margin:0;width:34px;height:34px;border-radius:10px;border:2.5px solid var(--lake);background:var(--surface);cursor:pointer;display:grid;place-items:center;flex:none}
+.tick input:checked{background:var(--lake)}
+.tick input:checked::after{content:"";width:9px;height:17px;border:solid var(--lake-ink);border-width:0 4px 4px 0;transform:rotate(45deg) translate(-1px,-2px)}
+.body{min-width:0;display:flex;flex-direction:column;gap:6px}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.time{font-weight:700;font-variant-numeric:tabular-nums;font-size:1.02rem}
+.title{font-size:1.28rem;font-weight:800;display:flex;gap:8px;align-items:baseline}
+.title .em{font-size:1.4rem}
+.det{color:var(--muted)}
+.det ul{margin:4px 0 0;padding-left:1.2em}
+.det li{margin:2px 0}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 16px;border-radius:12px;border:2px solid var(--lake);background:transparent;color:var(--lake);font-weight:700;text-decoration:none}
+.btn:hover{background:color-mix(in srgb,var(--lake) 12%,transparent)}
+.btn.solid{background:var(--lake);color:var(--lake-ink)}
+.btn[disabled]{opacity:.4;cursor:default}
+.stay-row{display:flex;gap:12px;align-items:center}
+.stay-row .big{font-size:1.9rem}
+
+@media (prefers-reduced-motion:reduce){.item{transition:none}}
+
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pager .btn{justify-content:center;min-height:56px;font-size:1.05rem}
+
+/* route */
+.route{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.stop{display:grid;grid-template-columns:44px 1fr;gap:12px}
+.rail{display:flex;flex-direction:column;align-items:center}
+.dot{width:40px;height:40px;border-radius:50%;background:var(--lake);color:var(--lake-ink);display:grid;place-items:center;font-size:1.2rem;flex:none}
+.line{flex:1;width:4px;background:repeating-linear-gradient(var(--line) 0 8px,transparent 8px 14px);min-height:26px}
+.stop .card{padding-bottom:6px}
+.stop h3{font-size:1.3rem}
+.drive{color:var(--slate);font-weight:700;font-size:.98rem;padding:4px 0 14px}
+.stop button.link{all:unset;cursor:pointer;color:var(--lake);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.stop button.link:focus-visible{outline:3px solid var(--gold)}
+
+/* weather */
+.wx{display:flex;flex-direction:column;gap:8px}
+.wx-top{display:flex;gap:14px;align-items:center}
+.wx-ic{font-size:2.6rem;line-height:1}
+.temps{font-family:var(--display);font-weight:800;font-size:1.6rem}
+.temps span{color:var(--muted);font-size:1.1rem;font-weight:600}
+.wx-note{font-size:.95rem;color:var(--muted)}
+.tag-est{font-size:.8rem;font-weight:700;border:1.5px solid var(--ochre);color:var(--ochre);border-radius:999px;padding:1px 8px;margin-left:6px}
+.wx-grid{display:grid;gap:14px}
+@media (min-width:640px){.wx-grid{grid-template-columns:1fr 1fr}}
+.wx-grid .panel{display:flex;flex-direction:column;gap:8px}
+
+/* tips */
+.list{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.list li{display:flex;gap:12px;align-items:flex-start}
+.list .tick input{width:30px;height:30px}
+.table{width:100%;border-collapse:collapse;font-size:1rem}
+.table th,.table td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.table th{font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.scroll-x{overflow-x:auto}
+.conv{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.conv label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.95rem}
+.conv input{font:inherit;font-size:1.25rem;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);width:100%;min-width:0}
+.small{font-size:.92rem;color:var(--muted)}
+
+/* bottom bar */
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1.5px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:10}
+.bar-in{max-width:760px;margin-inline:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.bar button{border:0;background:transparent;border-radius:14px;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:700;font-size:.85rem;color:var(--muted)}
+.bar button .ic{font-size:1.5rem;line-height:1}
+.bar button[aria-current="page"]{background:color-mix(in srgb,var(--lake) 16%,var(--surface));color:var(--lake)}
+</style>
+
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-in">
+      <div class="eyebrow">South Island road trip</div>
+      <h1>New Zealand 2026</h1>
+      <p class="sub">Friday 11 to Wednesday 23 December · 13 days</p>
+      <div class="pills">
+        <div class="clock" id="count" role="timer" aria-label="Countdown to landing in Christchurch"></div>
+        <div class="fact" id="fact"></div>
+      </div>
+    </div>
+    <svg class="sky" viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <circle cx="318" cy="30" r="15" fill="var(--gold)"/>
+      <polygon points="0,90 0,58 40,30 70,52 110,22 160,60 200,40 250,66 290,44 340,64 400,38 400,90" fill="#ffffff" fill-opacity=".22"/>
+      <polygon points="0,90 0,70 50,50 90,68 140,44 190,72 240,56 300,78 350,60 400,74 400,90" fill="#ffffff" fill-opacity=".38"/>
+      <path d="M0 82 Q 25 76 50 82 T 100 82 T 150 82 T 200 82 T 250 82 T 300 82 T 350 82 T 400 82 V90 H0Z" fill="var(--bg)"/>
+    </svg>
+  </header>
+
+  <main>
+    <!-- DAYS -->
+    <section class="view" id="view-days" aria-label="Day by day">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div>
+          <h2 class="h-sec" style="margin-bottom:10px">Pick a day</h2>
+          <div class="cal" id="cal" role="group" aria-label="Choose a day"></div>
+          <p class="legend">Tap a date to see that day’s plan.</p>
+        </div>
+        <div id="day"></div>
+      </div>
+    </section>
+
+    <!-- ROUTE -->
+    <section class="view" id="view-route" aria-label="Route" hidden>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div><h2 class="h-sec">Where we sleep</h2><p class="lead">Five places, thirteen days. Tap a place to see its days.</p></div>
+        <ol class="route" id="route"></ol>
+        <a class="btn solid" style="align-self:flex-start" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/Christchurch+Airport/Lake+Tekapo/Twizel/Queenstown/Dunedin/Christchurch">📍 Open the whole route in Google Maps</a>
+      </div>
+    </section>
+
+    <!-- WEATHER -->
+    <section class="view" id="view-weather" aria-label="Weather" hidden>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div><h2 class="h-sec">Weather where we sleep</h2>
+        <p class="lead">This is typical December weather for each place, not a forecast. It tells you what to pack. Real forecast to be added closer to the trip.</p></div>
+        <div class="wx-grid" id="wxall"></div>
+        <p class="small">Averages for 1991–2020 from Current Results. Twizel has no listing, so its numbers are estimated from nearby Lake Tekapo and Mount Cook.</p>
+      </div>
+    </section>
+
+    <!-- TIPS -->
+    <section class="view" id="view-tips" aria-label="Handy info" hidden>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <h2 class="h-sec">Handy info</h2>
+
+        <div class="panel">
+          <h3>🛬 Landing in Christchurch</h3>
+          <div class="scroll-x"><table class="table">
+            <thead><tr><th>Date</th><th>Who</th><th>Lands</th></tr></thead>
+            <tbody>
+              <tr><td>Thu 10 Dec</td><td>Chris + SK</td><td>5:20 pm</td></tr>
+              <tr><td>Fri 11 Dec</td><td>Keith + Susan + Mom</td><td>10:40 am</td></tr>
+              <tr><td>Fri 11 Dec</td><td>YK + Tat</td><td>2:30 pm</td></tr>
+            </tbody></table></div>
+          <h3 style="margin-top:18px">🛫 Flying out of Christchurch</h3>
+          <div class="scroll-x"><table class="table">
+            <thead><tr><th>Date</th><th>Who</th><th>Flight</th></tr></thead>
+            <tbody>
+              <tr><td>Mon 21 Dec</td><td>YK + Tat</td><td>6:20 am</td></tr>
+              <tr><td>Wed 23 Dec</td><td>Chris + SK</td><td>2:10 pm</td></tr>
+              <tr><td>Wed 23 Dec</td><td>Keith + Susan + Mom</td><td>5:20 pm</td></tr>
+            </tbody></table></div>
+        </div>
+
+        <div class="panel">
+          <h3>🕐 Singapore and New Zealand time</h3>
+          <p class="small" style="margin:4px 0 12px">In December New Zealand is <b>5 hours ahead</b> of Singapore. Right now:</p>
+          <div class="conv" style="margin-bottom:14px">
+            <div><div class="small">Singapore</div><div class="temps" id="clk-sg">–</div><div class="small" id="clk-sg-d"></div></div>
+            <div><div class="small">New Zealand</div><div class="temps" id="clk-nz">–</div><div class="small" id="clk-nz-d"></div></div>
+          </div>
+          <p class="small" style="margin:0 0 8px">Convert a time on a trip day. Type in either box.</p>
+          <div class="conv">
+            <label for="t-sg">Singapore time<input id="t-sg" type="time"></label>
+            <label for="t-nz">New Zealand time<input id="t-nz" type="time"></label>
+          </div>
+          <p class="small" id="t-note" style="margin-top:8px"></p>
+        </div>
+
+        <div class="panel">
+          <h3>📝 Still to decide or book</h3>
+          <div id="todo"></div>
+        </div>
+
+        <div class="panel">
+          <h3>🎒 Pack list</h3>
+          <p class="small" style="margin-top:4px">Tick as you pack. Your ticks stay on this phone.</p>
+          <ul class="list" id="pack" style="margin-top:10px"></ul>
+        </div>
+
+        <div class="panel">
+          <h3>💡 Good to know</h3>
+          <ul class="list" style="margin-top:10px">
+            <li><span aria-hidden="true">🕕</span><span>Shops in New Zealand close early, around 6 pm or 7 pm. Do your shopping in the afternoon.</span></li>
+            <li><span aria-hidden="true">🥪</span><span>No lunch spot near the Hooker Valley Track. Bring snacks, bread and water.</span></li>
+            <li><span aria-hidden="true">🚗</span><span>Long drives: Queenstown to Dunedin is about 4 hours, so plan at least 2 rest stops.</span></li>
+            <li><span aria-hidden="true">🚨</span><span>Emergency in New Zealand: call <b>111</b>.</span></li>
+            <li><span aria-hidden="true">⏱️</span><span>Times on each day are a rough guide, not a strict timetable.</span></li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h3>💱 Money converter</h3>
+          <p class="small" style="margin:4px 0 8px">Type in either box. Rate: 1 SGD = <input id="rate" type="number" step="0.001" min="0.1" value="1.391" style="width:5.6em;font:inherit;padding:2px 6px;border-radius:8px;border:2px solid var(--line);background:var(--surface);color:var(--ink)" aria-label="NZD per 1 SGD"> NZD</p>
+          <p class="small" style="margin:0 0 10px">This rate was checked on 12 Oct 2026 and does not update by itself. Tap the button for today’s rate, then type it in above.</p>
+          <p style="margin:0 0 12px"><a class="btn" href="https://www.xe.com/currencyconverter/convert/?Amount=1&amp;From=SGD&amp;To=NZD" target="_blank" rel="noopener">🔄 Check today’s live rate</a></p>
+          <div class="conv">
+            <label for="nzd">NZD<input id="nzd" type="number" inputmode="decimal" placeholder="0"></label>
+            <label for="sgd">SGD<input id="sgd" type="number" inputmode="decimal" placeholder="0"></label>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<nav class="bar" aria-label="Main">
+  <div class="bar-in">
+    <button type="button" data-view="days" aria-current="page"><span class="ic" aria-hidden="true">📅</span>Days</button>
+    <button type="button" data-view="route"><span class="ic" aria-hidden="true">🗺️</span>Route</button>
+    <button type="button" data-view="weather"><span class="ic" aria-hidden="true">🌤️</span>Weather</button>
+    <button type="button" data-view="tips"><span class="ic" aria-hidden="true">🎒</span>Handy info</button>
+  </div>
+</nav>
+
+<script>
+(function(){
+"use strict";
+/* ---------- data ---------- */
+var CAT={visit:"Walk & visit",eat:"Eat",stay:"Stay & rest",drive:"Drive",flight:"Flight",meet:"Meet-up"};
+var WX={
+  tekapo:{name:"Lake Tekapo",icon:"🌤️",hi:20,lo:7,rain:6,mm:41,tip:"Mild days and cold nights. Bring a warm jacket for stargazing."},
+  twizel:{name:"Twizel",icon:"🌤️",hi:21,lo:7,rain:6,mm:40,est:true,tip:"Sunny and breezy. Hat and sunscreen for the day, a jumper for the evening."},
+  queenstown:{name:"Queenstown",icon:"🌦️",hi:22,lo:10,rain:9,mm:75,tip:"Warm sun, cool breeze, some showers. Wear layers and bring a light rain jacket."},
+  dunedin:{name:"Dunedin",icon:"🌦️",hi:18,lo:10,rain:10,mm:71,tip:"The coolest and wettest stop. Bring a windproof jacket and an umbrella."},
+  chch:{name:"Christchurch",icon:"☀️",hi:21,lo:11,rain:7,mm:47,tip:"Pleasant days, mostly dry. A light jacket for the evening."}
+};
+var MTCOOK={name:"Mount Cook",icon:"🌧️",hi:19,lo:7,rain:14,mm:426,tip:"Mountain weather changes fast and it is wet. Bring a rain jacket for the Hooker Valley walk."};
+
+/* item: [time, cat, emoji, title, detail (string or array), options] */
+var DAYS=[
+{n:1,date:"2026-12-11",title:"Touch down in Christchurch",place:"Christchurch → Lake Tekapo",stay:"Lake Tekapo (Airbnb)",wx:"tekapo",
+ banner:"<b>Arrivals:</b> Chris + SK land the day before, on Thursday 10 Dec at 5:20 pm.",
+ items:[
+  ["10:40 am","flight","✈️","Keith + Susan + Mom land in Christchurch","Landing at 10:40 am.",{map:"Christchurch Airport"}],
+  ["After landing","drive","🔑","Pick up your rental car","Everyone picks up their own car, from different rental companies.",{map:"car rental Christchurch Airport"}],
+  ["1:00 pm","eat","🛒","Lunch with Chris’s family, then groceries","Meet Chris’s family for lunch around Christchurch. Do the grocery shopping and buy some dried food at New World or Woolworths.",{map:"New World supermarket Christchurch"}],
+  ["2:30 pm","flight","✈️","YK + Tat land in Christchurch","Landing at 2:30 pm.",{map:"Christchurch Airport"}],
+  ["3:30 pm","meet","🤝","Meet YK & Tat’s family","Around 3:30 to 4:00 pm."],
+  ["5:00 pm","drive","🚐","Drive to Lake Tekapo","About 3 hours. Expected arrival 7:30 pm.",{map:"Lake Tekapo"}],
+  ["8:00 pm","stay","🏡","Check in, dinner and rest","Lake Tekapo Airbnb."]
+ ]},
+{n:2,date:"2026-12-12",title:"Lake Tekapo",place:"Lake Tekapo",stay:"Lake Tekapo (Airbnb)",wx:"tekapo",
+ items:[
+  ["8:00 am","visit","🔭","Mount John Lookout & Astro Café","Or head to the lupin “flower sea” if you prefer.",{map:"Astro Cafe Mount John Lake Tekapo"}],
+  ["10:00 am","visit","⛪","Explore the lakeside",["The Church of the Good Shepherd","The sheepdog memorial","Maclaren Footbridge"],{map:"Church of the Good Shepherd Lake Tekapo"}],
+  ["12:00 pm","eat","🥞","Lunch at The Better Batter NZ","",{map:"The Better Batter Lake Tekapo"}],
+  ["2:00 pm","stay","😴","Rest at the Airbnb",""],
+  ["3:00 pm","visit","🌸","Lupin field and petting zoo",["Lake Tekapo Lupin Field","Lake Tekapo Petting Zoo"],{opt:1,kids:1,map:"Lake Tekapo Lupin Field"}],
+  ["6:00 pm","eat","🍽️","Dinner at the Airbnb",""],
+  ["8:00 pm","visit","🌌","Stargazing","Wrap up warm. It gets cold at night.",{must:0}]
+ ]},
+{n:3,date:"2026-12-13",title:"Lake Tekapo to Mount Cook to Twizel",place:"Mount Cook & Twizel",stay:"Twizel (Airbnb)",wx:"twizel",extraWx:MTCOOK,
+ items:[
+  ["9:00 am","drive","🚐","Drive to Mount Cook","About 1 hour 30 minutes.",{map:"Mount Cook Village"}],
+  ["11:00 am","visit","🥾","Hooker Valley Track","Prepare snacks, bread and water before you go. There is no lunch spot nearby.",{map:"Hooker Valley Track car park"}],
+  ["3:00 pm","stay","🏡","Check in to the Airbnb in Twizel",""],
+  ["5:00 pm","visit","🌅","Free & easy near Twizel, then dinner",["Lake Pukaki","Aoraki (Mount Cook) view","Playground near Twizel"],{kids:1,map:"Lake Pukaki"}]
+ ]},
+{n:4,date:"2026-12-14",title:"Twizel to Queenstown",place:"Cromwell → Queenstown",stay:"Queenstown (Airbnb)",wx:"queenstown",
+ items:[
+  ["9:00 am","drive","🚐","Drive to Cromwell","About 2 hours. Stop by the Clay Cliffs viewpoint on the way.",{map:"Clay Cliffs Omarama"}],
+  ["12:00 pm","eat","🍴","Lunch near Cromwell","",{map:"Cromwell New Zealand"}],
+  ["2:00 pm","visit","🍒","Cherry picking at Cromwell","",{map:"cherry orchard Cromwell"}],
+  ["4:00 pm","drive","🚐","Continue to Queenstown","About 50 minutes.",{map:"Queenstown"}],
+  ["5:00 pm","stay","🏡","Check in to the Queenstown Airbnb","Then free & easy."],
+  ["5:30 pm","eat","🍔","Dinner near Queenstown","Fergburger, “the best burger in the world”.",{must:1,map:"Fergburger Queenstown"}]
+ ]},
+{n:5,date:"2026-12-15",title:"Day trip to Wanaka",place:"Queenstown · Wanaka day trip",stay:"Queenstown (Airbnb)",wx:"queenstown",
+ items:[
+  ["9:00 am","drive","🚐","Drive to Wanaka","About 1 hour 10 minutes.",{map:"Wanaka"}],
+  ["11:00 am","visit","🌳","Free & easy by the lake",["Wanaka Tree","Dinosaur playground","Rotary playground"],{kids:1,map:"That Wanaka Tree"},"All three are along the lakeside and very near each other. For those who want to walk around: café hopping, kopi time, dessert."],
+  ["1:00 pm","eat","🍴","Lunch in Wanaka","",{map:"Wanaka town centre"}],
+  ["2:00 pm","visit","🚗","National Transport and Toy Museum","",{kids:1,map:"National Transport and Toy Museum Wanaka"}],
+  ["4:00 pm","drive","📸","Back to Queenstown, with photo stops",["Crown Range Road Scenic Lookout","Arrow Junction Lookout Point"],{map:"Crown Range Road Lookout"}],
+  ["6:00 pm","eat","🍽️","Dinner and free & easy",""]
+ ]},
+{n:6,date:"2026-12-16",title:"Arrowtown and vineyard",place:"Arrowtown & Mt Difficulty",stay:"Queenstown (Airbnb)",wx:"queenstown",
+ banner:"<b>Optional:</b> Milford Sound is a full-day trip. If you are interested, you are free to book your own tour for this day.",
+ items:[
+  ["9:00 am","drive","🚐","Drive to Arrowtown","About 30 minutes.",{map:"Arrowtown"}],
+  ["10:00 am","visit","🏘️","Explore Arrowtown",["Stroll the historic main street","Lake District Museum (kids friendly)","Coffee break","Arrowtown Chinese Settlement"],{kids:1,map:"Arrowtown Chinese Settlement"}],
+  ["12:00 pm","eat","🍴","Lunch in Arrowtown","",{map:"Arrowtown main street"}],
+  ["2:00 pm","visit","🍷","Mt Difficulty Winery","About 40 minutes’ drive. Award-winning Pinot Noir. Feel free to do wine tasting, have a drink and a snack.",{map:"Mt Difficulty Wines Bannockburn"}],
+  ["5:00 pm","stay","🏡","Back in Queenstown",""]
+ ]},
+{n:7,date:"2026-12-17",title:"Walter Peak farm day",place:"Queenstown · Walter Peak",stay:"Queenstown (Airbnb)",wx:"queenstown",
+ items:[
+  ["9:00 am","stay","😴","Lazy morning","Wake up late if you like."],
+  ["11:00 am","eat","🚤","Walter Peak BBQ with scenic cruise","BBQ dining plus a scenic cruise around Lake Wakatipu. Top-rated BBQ dining in Queenstown. Keith is checking with the tour company whether lunch comes with a farm dog show. If not, we may move it to dinner.",{kids:0,map:"Walter Peak High Country Farm"}],
+  ["4:00 pm","visit","🛍️","Free & easy and shopping in Queenstown","Shops in New Zealand close early, around 6 pm or 7 pm.",{map:"Queenstown town centre"}]
+ ]},
+{n:8,date:"2026-12-18",title:"Queenstown to Dunedin",place:"Queenstown → Dunedin",stay:"Dunedin (Airbnb)",wx:"dunedin",
+ items:[
+  ["8:00 am","drive","🚐","Long drive to Dunedin","About 4 hours. We will plan at least 2 rest stops if needed.",{map:"Dunedin"}],
+  ["4:00 pm","visit","🌇","Free & easy in Dunedin",["Signal Hill viewpoint","Baldwin Street, the world’s steepest street"],{map:"Baldwin Street Dunedin"}],
+  ["8:00 pm","visit","🐧","Blue Penguins Pukekura tour","The tour starts at 9 pm.",{opt:1,map:"Blue Penguins Pukekura Dunedin"}]
+ ]},
+{n:9,date:"2026-12-19",title:"Dunedin",place:"Dunedin",stay:"Dunedin (Airbnb)",wx:"dunedin",
+ items:[
+  ["10:00 am","visit","🚂","Dunedin Railway Station","",{map:"Dunedin Railway Station"}],
+  ["11:00 am","visit","🔬","Otago Museum Science Centre or Botanic Garden","Choose one. The museum is kids friendly.",{kids:1,map:"Otago Museum Dunedin"}],
+  ["1:00 pm","eat","🍴","Lunch and rest",""],
+  ["3:00 pm","visit","🏰","Explore the Otago Peninsula","About 40 minutes’ drive, for those who are interested. Larnach Castle and viewpoints, or the Botanic Garden near town instead.",{opt:1,map:"Larnach Castle Dunedin"}]
+ ]},
+{n:10,date:"2026-12-20",title:"Dunedin to Christchurch",place:"Dunedin → Christchurch",stay:"Christchurch (Airbnb)",wx:"chch",
+ items:[
+  ["9:00 am","drive","🚐","Long road trip to Christchurch","Stop by Oamaru (Scott beer) and Timaru on the way.",{map:"Scott Brewing Oamaru"}],
+  ["4:00 pm","stay","🏡","Check in to the Christchurch Airbnb and rest",""],
+  ["6:00 pm","eat","🍽️","Dinner",""]
+ ]},
+{n:11,date:"2026-12-21",title:"Hanmer Springs day",place:"Christchurch · Hanmer Springs",stay:"Christchurch (Airbnb)",wx:"chch",
+ items:[
+  ["6:20 am","flight","✈️","YK + Tat’s flight","Flight at 6:20 am."],
+  ["9:00 am","drive","🚐","Drive to Hanmer Springs","About 2 hours from Christchurch.",{map:"Hanmer Springs Thermal Pools"}],
+  ["10:00 am","visit","♨️","A day at Hanmer Springs","Thermal pool water park, with activities for kids.",{kids:1,map:"Hanmer Springs Thermal Pools"}]
+ ]},
+{n:12,date:"2026-12-22",title:"Last day, chill day",place:"Christchurch",stay:"Christchurch (Airbnb)",wx:"chch",
+ items:[
+  ["9:00 am","eat","☕","Brunch at Child Sister","",{}],
+  ["10:30 am","visit","🚋","Stroll around Christchurch",["Christchurch Tram","Shopping","Window shopping"],{map:"Christchurch Tram"}],
+  ["6:00 pm","eat","🍽️","Dinner",""],
+  ["8:00 pm","stay","🧳","Packing and rest","Last night in New Zealand."]
+ ]},
+{n:13,date:"2026-12-23",title:"Fly home",place:"Christchurch Airport",stay:"",wx:"chch",
+ items:[
+  ["2:10 pm","flight","✈️","Chris + SK’s flight","Flight at 2:10 pm.",{map:"Christchurch Airport"}],
+  ["5:20 pm","flight","✈️","Keith + Susan + Mom’s flight","Flight at 5:20 pm.",{map:"Christchurch Airport"}]
+ ]}
+];
+
+var STOPS=[
+ {name:"Christchurch",emoji:"🏁",nights:"Arrive Fri 11 Dec",days:[1],note:"Pick up the car, lunch with Chris’s family, then hit the road."},
+ {name:"Lake Tekapo",emoji:"🌌",nights:"2 nights · 11–13 Dec",days:[1,2],drive:"3 hours from Christchurch",note:"Lupins, the little church and stargazing."},
+ {name:"Twizel",emoji:"🏔️",nights:"1 night · 13–14 Dec",days:[3],drive:"1 hr 30 min to Mount Cook, then to Twizel",note:"Hooker Valley Track and Lake Pukaki."},
+ {name:"Queenstown",emoji:"🍔",nights:"4 nights · 14–18 Dec",days:[4,5,6,7],drive:"About 2 hrs 50 min with Cromwell stop",note:"Wanaka, Arrowtown, wine and Walter Peak."},
+ {name:"Dunedin",emoji:"🐧",nights:"2 nights · 18–20 Dec",days:[8,9],drive:"About 4 hours from Queenstown",note:"Baldwin Street, the railway station and maybe penguins."},
+ {name:"Christchurch",emoji:"🏁",nights:"3 nights · 20–23 Dec",days:[10,11,12,13],drive:"Full-day road trip via Oamaru and Timaru",note:"Hanmer Springs, a chill last day, then fly home."}
+];
+
+var PACK=["Warm jacket (cold nights in Tekapo)","Light rain jacket or umbrella","Sunscreen, hat and sunglasses (the sun is strong)","Comfy walking shoes for Hooker Valley","Swimsuit and towel for Hanmer Springs","Snacks, bread and water for Mount Cook day","Power adapter for NZ plugs","Phone charger and car phone holder","Reusable shopping bag for the supermarket","Passports","Your physical driving licence (bring the actual card)","Some NZ cash. Some places add a surcharge when you pay by credit card"];
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function $(s,r){return (r||document).querySelector(s);}
+var DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], DOWL=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"], MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function parts(d){var p=d.date.split("-");var dt=new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));return {dow:dt.getUTCDay(),day:+p[2],mon:+p[1]-1};}
+function longDate(d){var p=parts(d);return DOWL[p.dow]+" "+p.day+" "+["January","February","March","April","May","June","July","August","September","October","November","December"][p.mon];}
+
+var store={done:{},day:1};
+try{var raw=localStorage.getItem("nz26");if(raw){var o=JSON.parse(raw);if(o&&typeof o==="object"){store.done=o.done||{};store.day=o.day||1;}}}catch(e){}
+function save(){try{localStorage.setItem("nz26",JSON.stringify(store));}catch(e){}}
+
+var START=Date.UTC(2026,11,11);
+function tripIndex(){var n=new Date();return Math.round((Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())-START)/864e5);}
+var TI=tripIndex();           // 0..12 while on the trip
+var TODAY=(TI>=0&&TI<=12)?TI+1:0;
+
+function itemId(d,k){return "d"+d.n+"-"+k;}
+/* fun facts: a new one is picked every time the page loads */
+var FACTS=[
+ "New Zealand has about 5 times more sheep than people. You will see plenty on the drive.",
+ "Mount Cook, called Aoraki in Māori, is New Zealand’s highest mountain at 3,724 metres.",
+ "Lake Tekapo sits inside the Aoraki Mackenzie Dark Sky Reserve, one of the best places in the world to see stars.",
+ "Lake Pukaki and Lake Tekapo are turquoise because of “rock flour”, fine rock dust ground up by glaciers.",
+ "Baldwin Street in Dunedin once held the Guinness World Record as the steepest street in the world, with a slope of about 35%.",
+ "Dunedin Railway Station, opened in 1906, is nicknamed the “Gingerbread House”.",
+ "The little blue penguin is the smallest penguin in the world, about 33 cm tall. You can see them in Dunedin.",
+ "The Otago Peninsula near Dunedin has the only mainland royal albatross colony in the world.",
+ "The first commercial bungy jump in the world opened in 1988 at Kawarau Bridge, near Queenstown.",
+ "The lupins around Lake Tekapo came from North America. They bloom around December, right when we visit.",
+ "Arrowtown began as a gold rush town in the 1860s, and Chinese miners lived in the settlement you will visit.",
+ "New Zealand was the first country in the world where women won the right to vote, in 1893.",
+ "New Zealand has no native land snakes.",
+ "The kiwi is a flightless bird that comes out at night. New Zealanders also call themselves Kiwis.",
+ "The Māori name for New Zealand, Aotearoa, is often translated as “land of the long white cloud”.",
+ "The Church of the Good Shepherd at Lake Tekapo was built in 1935, and its big window looks straight out at the lake.",
+ "New Zealand is one of the first places in the world to see each new day, because it is just west of the International Date Line.",
+ "That Wanaka Tree is a lone willow growing in the lake, and it is one of the most photographed trees in the country."
+];
+
+/* ---------- header pills ---------- */
+function renderPills(){
+  var f=FACTS[Math.floor(Math.random()*FACTS.length)];
+  $("#fact").innerHTML='<div class="fi" aria-hidden="true">🥝</div><div><h2>Fun fact about New Zealand</h2><p>'+esc(f)+'</p></div>';
+}
+/* live countdown to Keith + Susan + Mom landing in Christchurch: Fri 11 Dec 2026, 10:40 am NZ time (= 10 Dec, 21:40 UTC) */
+var TARGET=Date.UTC(2026,11,10,21,40,0),clockBuilt=false;
+function p2(n){return n<10?"0"+n:String(n);}
+function tick(){
+  var c=$("#count"),diff=TARGET-Date.now();
+  if(diff<=0){
+    clockBuilt=false;
+    c.innerHTML='<div class="clk-done" style="background:none;padding:0">'+(TODAY?"Day "+TODAY+" of 13 · today! 🎉":"Welcome home! 🏡")+'</div>';
+    return;
+  }
+  if(!clockBuilt){
+    c.innerHTML='<div class="clk-label" style="background:none;padding:0;display:flex"><i aria-hidden="true"></i>Counting down to landing in Christchurch</div>'+
+      '<div class="clk-row"><div><b id="cd-d">0</b><span>days</span></div><div><b id="cd-h">00</b><span>hours</span></div><div><b id="cd-m">00</b><span>mins</span></div><div><b id="cd-s">00</b><span>secs</span></div></div>';
+    clockBuilt=true;
+  }
+  var s=Math.floor(diff/1000);
+  $("#cd-d").textContent=Math.floor(s/86400);
+  $("#cd-h").textContent=p2(Math.floor(s%86400/3600));
+  $("#cd-m").textContent=p2(Math.floor(s%3600/60));
+  $("#cd-s").textContent=p2(s%60);
+}
+tick();setInterval(tick,1000);
+
+/* ---------- calendar ---------- */
+function renderCal(){
+  var cal=$("#cal");cal.innerHTML="";
+  DAYS.forEach(function(d){
+    var p=parts(d),b=document.createElement("button");
+    b.type="button";b.setAttribute("aria-pressed",String(d.n===store.day));
+    b.setAttribute("aria-label","Day "+d.n+", "+longDate(d)+", "+d.place+(d.n===TODAY?", today":""));
+    b.dataset.n=d.n;
+    b.innerHTML='<span class="dow">'+DOW[p.dow]+'</span><span class="num">'+p.day+'</span>'+(d.n===TODAY?'<span class="today" aria-hidden="true"></span>':"");
+    cal.appendChild(b);
+  });
+}
+
+/* ---------- weather ---------- */
+function wxHTML(w,label){
+  return '<div class="wx"><div class="wx-top"><div class="wx-ic" aria-hidden="true">'+w.icon+'</div><div><div class="temps">'+w.hi+'° <span>/ '+w.lo+'° C</span></div>'+
+  '<div class="wx-note">'+esc(label)+(w.est?'<span class="tag-est">Estimate</span>':"")+'</div></div></div>'+
+  '<p>'+esc(w.tip)+'</p><p class="wx-note">Rain on about '+(w.est?"":"")+w.rain+' days out of 31 in December (about '+w.mm+' mm).</p></div>';
+}
+
+/* ---------- day ---------- */
+function mapUrl(q){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q+(/New Zealand|Christchurch|Tekapo|Queenstown|Dunedin|Wanaka|Arrowtown|Hanmer|Cromwell|Omarama|Mount Cook|Oamaru|Bannockburn/i.test(q)?"":", New Zealand"));}
+function itemHTML(d,it,k){
+  var cat=it[1],o=it[5]||{},id=itemId(d,k),done=!!store.done[id];
+  var det=it[4],extra=it[6]||"";
+  var detHTML="";
+  if(Array.isArray(det)){detHTML='<ul>'+det.map(function(x){return "<li>"+esc(x)+"</li>";}).join("")+'</ul>';}
+  else if(det){detHTML="<p>"+esc(det)+"</p>";}
+  if(extra)detHTML+="<p style=\"margin-top:6px\">"+esc(extra)+"</p>";
+  var chips='<span class="chip c-'+cat+'">'+CAT[cat]+'</span>';
+  if(o.opt)chips+='<span class="chip plain">Optional</span>';
+  if(o.kids)chips+='<span class="chip plain">👧 Kids friendly</span>';
+  if(o.must)chips+='<span class="chip plain">⭐ Must try</span>';
+  var act=o.map?'<div class="acts"><a class="btn" href="'+mapUrl(o.map)+'" target="_blank" rel="noopener">📍 Show on map</a></div>':"";
+  return '<li class="item'+(done?" done":"")+'" id="it-'+id+'"><label class="tick"><input type="checkbox" data-id="'+id+'"'+(done?" checked":"")+' aria-label="Done: '+esc(it[3])+'"></label>'+
+   '<div class="body"><div class="meta"><span class="time">'+esc(it[0])+'</span>'+chips+'</div>'+
+   '<h3 class="title"><span class="em" aria-hidden="true">'+it[2]+'</span><span>'+esc(it[3])+'</span></h3>'+
+   (detHTML?'<div class="det">'+detHTML+'</div>':"")+act+'</div></li>';
+}
+function renderDay(){
+  var d=DAYS[store.day-1],p=parts(d);
+  var h='<div style="display:flex;flex-direction:column;gap:16px">';
+  h+='<div class="day-head"><div class="eyebrow">Day '+d.n+' of 13 · '+longDate(d)+(d.n===TODAY?" · Today":"")+'</div><h2>'+esc(d.title)+'</h2></div>';
+  if(d.banner)h+='<div class="banner">'+d.banner+'</div>';
+  h+='<div class="two">';
+  if(d.stay){h+='<div class="panel stay-row"><div class="big" aria-hidden="true">🛏️</div><div><h3 style="font-size:1.1rem">Tonight we sleep at</h3><p>'+esc(d.stay)+'</p><p class="small">Night '+d.n+' of 12</p></div></div>';}
+  else{h+='<div class="panel stay-row"><div class="big" aria-hidden="true">🏠</div><div><h3 style="font-size:1.1rem">Time to go home</h3><p>Safe travels, everyone.</p></div></div>';}
+  var w=WX[d.wx];
+  h+='<div class="panel">'+wxHTML(w,(d.stay?"Tonight in ":"At ")+w.name+" · typical December")+'</div>';
+  h+='</div>';
+  if(d.extraWx){h+='<div class="panel">'+wxHTML(d.extraWx,"Daytime at "+d.extraWx.name+" · typical December")+'</div>';}
+  h+='<ul class="tl">'+d.items.map(function(it,k){return itemHTML(d,it,k);}).join("")+'</ul>';
+  h+='<div class="pager"><button class="btn" type="button" data-go="'+(d.n-1)+'"'+(d.n===1?" disabled":"")+'>← '+(d.n>1?"Day "+(d.n-1):"Start")+'</button><button class="btn solid" type="button" data-go="'+(d.n+1)+'"'+(d.n===13?" disabled":"")+'>'+(d.n<13?"Day "+(d.n+1):"The end")+' →</button></div>';
+  h+='</div>';
+  $("#day").innerHTML=h;
+}
+function goDay(n,scroll){
+  if(n<1||n>13)return;
+  store.day=n;save();renderCal();renderDay();
+  try{history.replaceState(null,"","#day-"+n);}catch(e){}
+  if(scroll){var t=$("#day");if(t&&t.scrollIntoView){t.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});}}
+}
+
+/* ---------- route ---------- */
+function renderRoute(){
+  var h="";
+  STOPS.forEach(function(s,i){
+    var last=i===STOPS.length-1;
+    h+='<li class="stop"><div class="rail"><div class="dot" aria-hidden="true">'+s.emoji+'</div>'+(last?"":'<div class="line"></div>')+'</div><div class="card"><h3>'+esc(s.name)+'</h3><p class="small">'+esc(s.nights)+'</p><p>'+esc(s.note)+'</p>'+
+      '<p style="margin-top:4px"><button type="button" class="link" data-go="'+s.days[0]+'">See '+(s.days.length>1?"days "+s.days[0]+"–"+s.days[s.days.length-1]:"day "+s.days[0])+'</button></p>'+
+      (last?"":'<p class="drive">🚗 Next: '+esc(STOPS[i+1].drive||"")+'</p>')+'</div></li>';
+  });
+  $("#route").innerHTML=h;
+}
+
+/* ---------- weather tab ---------- */
+function renderWx(){
+  var order=[["tekapo","Nights of 11 and 12 Dec"],["twizel","Night of 13 Dec"],["queenstown","Nights of 14 to 17 Dec"],["dunedin","Nights of 18 and 19 Dec"],["chch","Nights of 20 to 22 Dec"]];
+  var h="";
+  order.forEach(function(o){var w=WX[o[0]];h+='<div class="panel"><h3>'+esc(w.name)+'</h3>'+wxHTML(w,o[1])+'</div>';});
+  h+='<div class="panel"><h3>Day visit: '+MTCOOK.name+'</h3>'+wxHTML(MTCOOK,"Sunday 13 Dec")+'</div>';
+  $("#wxall").innerHTML=h;
+}
+
+/* ---------- tips ---------- */
+function renderPack(){
+  $("#pack").innerHTML=PACK.map(function(t,i){var id="p"+i;return '<li><label class="tick"><input type="checkbox" data-pack="'+id+'"'+(store.done[id]?" checked":"")+' aria-label="Packed: '+esc(t)+'"></label><span>'+esc(t)+'</span></li>';}).join("");
+}
+/* ---------- still to decide: status dropdowns, shared through db ---------- */
+var TODO=[
+ {id:"milford",title:"Milford Sound day tour",when:"Wed 16 Dec",note:"It is a full-day trip. Book your own tour if you want to go.",opts:["Not decided yet","Interested","Booked","Not going"]},
+ {id:"walterpeak",title:"Walter Peak BBQ and dog show",when:"Thu 17 Dec",note:"Keith is asking the tour company if lunch comes with a farm dog show. If not, the BBQ may move to dinner.",opts:["Still checking with the tour company","Lunch includes the dog show","No dog show, keep it at lunch","Moved to dinner"]},
+ {id:"penguins",title:"Blue Penguins Pukekura tour",when:"Fri 18 Dec",note:"Optional. The tour starts at 9 pm in Dunedin.",opts:["Not decided yet","Interested","Booked","Not going"]}
+];
+var todoVal={},todoDb=null,todoCanWrite=false,todoMsg={};
+function renderTodo(){
+  var box=$("#todo");if(!box)return;
+  box.innerHTML=TODO.map(function(t){
+    var v=todoVal[t.id]||t.opts[0];
+    var ctl;
+    if(todoCanWrite){
+      ctl='<select id="st-'+t.id+'" data-todo="'+t.id+'" aria-label="Status: '+esc(t.title)+'">'+t.opts.map(function(o){return '<option'+(o===v?" selected":"")+'>'+esc(o)+'</option>';}).join("")+'</select><div class="saved" id="sv-'+t.id+'" aria-live="polite">'+esc(todoMsg[t.id]||"")+'</div>';
+    }else{
+      ctl='<div><span class="chip c-visit">'+esc(v)+'</span></div>';
+    }
+    return '<div class="todo"><h4>'+esc(t.title)+' <span class="small">· '+esc(t.when)+'</span></h4><p class="det">'+esc(t.note)+'</p>'+ctl+'</div>';
+  }).join("");
+}
+document.addEventListener("change",function(e){
+  var s=e.target;if(!(s instanceof HTMLSelectElement)||!s.dataset.todo||!todoDb)return;
+  var id=s.dataset.todo,v=s.value;
+  todoVal[id]=v;
+  todoDb.doc("trip/"+id).set({value:v}).then(function(){
+    todoMsg[id]="Saved. Everyone can see this.";var m=$("#sv-"+id);if(m)m.textContent=todoMsg[id];
+  },function(){
+    todoCanWrite=false;renderTodo();
+  });
+});
+renderTodo();
+(function(){
+  try{
+    if(!window.claude||!window.claude.use)return;
+    Promise.all([window.claude.use("db"),window.claude.use("user")]).then(function(r){
+      var db=r[0],user=r[1];if(!db)return;
+      Promise.resolve(user?user.canEdit():false).then(function(ce){
+        todoDb=db;todoCanWrite=!!ce;
+        db.collection("trip").onSnapshot(function(snap){
+          var o={};snap.docs.forEach(function(d){var x=d.data();if(x&&typeof x.value==="string")o[d.id]=x.value;});
+          todoVal=o;renderTodo();
+        },function(){});
+        renderTodo();
+      });
+    }).catch(function(){});
+  }catch(e){}
+})();
+
+/* ---------- Singapore / New Zealand time ---------- */
+function setupTime(){
+  function fmt(tz,opt){return new Intl.DateTimeFormat("en-GB",Object.assign({timeZone:tz},opt)).format(new Date());}
+  function clocks(){
+    try{
+      $("#clk-sg").textContent=fmt("Asia/Singapore",{hour:"numeric",minute:"2-digit",hour12:true});
+      $("#clk-nz").textContent=fmt("Pacific/Auckland",{hour:"numeric",minute:"2-digit",hour12:true});
+      $("#clk-sg-d").textContent=fmt("Asia/Singapore",{weekday:"long",day:"numeric",month:"short"});
+      $("#clk-nz-d").textContent=fmt("Pacific/Auckland",{weekday:"long",day:"numeric",month:"short"});
+    }catch(e){}
+  }
+  clocks();setInterval(clocks,15000);
+  var sg=$("#t-sg"),nz=$("#t-nz"),note=$("#t-note"),OFF=300;
+  function toMin(v){var p=v.split(":");return (+p[0])*60+(+p[1]);}
+  function toStr(m){m=((m%1440)+1440)%1440;return p2(Math.floor(m/60))+":"+p2(m%60);}
+  function dayWord(m){return m>=1440?"the next day":(m<0?"the day before":"the same day");}
+  sg.addEventListener("input",function(){if(!sg.value){nz.value="";note.textContent="";return;}var m=toMin(sg.value)+OFF;nz.value=toStr(m);note.textContent="In New Zealand that is "+dayWord(m)+".";});
+  nz.addEventListener("input",function(){if(!nz.value){sg.value="";note.textContent="";return;}var m=toMin(nz.value)-OFF;sg.value=toStr(m);note.textContent="In Singapore that is "+dayWord(m)+".";});
+}
+function setupConv(){
+  var r=$("#rate"),n=$("#nzd"),s=$("#sgd");
+  function rate(){var v=parseFloat(r.value);return v>0?v:1.3;}
+  n.addEventListener("input",function(){var v=parseFloat(n.value);s.value=isNaN(v)?"":(v/rate()).toFixed(2);});
+  s.addEventListener("input",function(){var v=parseFloat(s.value);n.value=isNaN(v)?"":(v*rate()).toFixed(2);});
+  r.addEventListener("input",function(){if(n.value)n.dispatchEvent(new Event("input"));});
+}
+
+/* ---------- views ---------- */
+function showView(v){
+  ["days","route","weather","tips"].forEach(function(k){$("#view-"+k).hidden=(k!==v);});
+  document.querySelectorAll(".bar button").forEach(function(b){if(b.dataset.view===v)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
+  window.scrollTo(0,0);
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",function(e){
+  var t=e.target.closest("button");if(!t)return;
+  if(t.dataset.view){showView(t.dataset.view);return;}
+  if(t.dataset.go){showView("days");goDay(+t.dataset.go,true);return;}
+  if(t.closest("#cal")&&t.dataset.n){goDay(+t.dataset.n,false);}
+});
+document.addEventListener("change",function(e){
+  var c=e.target;if(!(c instanceof HTMLInputElement)||c.type!=="checkbox")return;
+  if(c.dataset.pack){store.done[c.dataset.pack]=c.checked;save();return;}
+  if(c.dataset.id){
+    store.done[c.dataset.id]=c.checked;save();
+    var li=c.closest(".item");if(li)li.classList.toggle("done",c.checked);
+  }
+});
+
+/* ---------- start ---------- */
+renderPills();renderRoute();renderWx();renderPack();setupConv();setupTime();
+var start=store.day;
+var h=(location.hash||"").match(/^#day-(\d+)$/);
+if(TODAY)start=TODAY;else if(h)start=+h[1];else start=1;
+if(start<1||start>13)start=1;
+store.day=start;renderCal();renderDay();
+var hv=(location.hash||"").replace("#","");
+if(["route","weather","tips"].indexOf(hv)>-1)showView(hv);
+})();
+</script>
+
+</body>
+</html>
